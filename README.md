@@ -24,7 +24,7 @@ recs = instance.title_recommend('Some Paper Title')
 ```
 Returned from all of these methods is a `RecList` Object, which is really just a list of `CallRec` Objects.  The important method is `show`, which takes no parameters and returns a markdown representation of the recommendation set.  For example, to view the nicely formatted recommendations we retrieved above we would use:
 ```python
-from IPython import display
+from IPython.display import display
 
 display(recs.show())
 ```
