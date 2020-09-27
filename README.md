@@ -4,11 +4,11 @@ Paper Recommender is a python package for scraping the [University of Pennsylvan
 
 ## Usage
 
-To get started, we define a `CallInstance` Object:
+To get started, we define a `CallInstance` Object.  See docstring for additional constructor parameters--leaving defaults is not recommended as the search will most likely take a very long time. The parameters we set here scrape the first three pages of results:
 ```python
 import papers
 
-instance = papers.Calls.CallInstance()
+instance = papers.Calls.CallInstance(scope="pages", n=3)
 ```
 When `instance` is initialized, the site is scraped using `requests`, `lxml`, and `BeautifulSoup` and the relevant data stored.  This may take several minutes, since each call's site must be accessed individually for a full description and there is some wait time between requests.  Although the `instance` object is mostly used for the various recommender functions, its individual `Call` Objects may be accessed using the `calls` attribute:
 ```python
