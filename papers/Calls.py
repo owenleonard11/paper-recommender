@@ -10,8 +10,8 @@ import requests
 import lxml.html
 
 import nltk
-nltk.download("wordnet")
 
+nltk.download("wordnet")
 
 # Used in the Call.parse_due_date function to associate a month name with the corresponding integer
 MONTH_DICT = dict(January=1, February=2, March=3, April=4, May=5, June=6, July=7, August=8, September=9, October=10,
@@ -109,13 +109,13 @@ class Call:
         self.article = article
         self.source = article.header.h2.a.get_text()
         self.source_link = "https://call-for-papers.sas.upenn.edu" + article.header.h2.a.get('href')
-        self.updated = article.find(class_='field-name-field-cfp-updated').\
+        self.updated = article.find(class_='field-name-field-cfp-updated'). \
             find(class_='field-items').div.span.get_text()
-        self.contact = article.find(class_='field-name-field-cfp-contact-name').\
+        self.contact = article.find(class_='field-name-field-cfp-contact-name'). \
             find(class_='field-items').div.get_text()
-        self.deadline = article.find(class_='field-name-field-cfp-due-date').\
+        self.deadline = article.find(class_='field-name-field-cfp-due-date'). \
             find(class_='field-items').div.span.get_text()
-        self.description = article.find(class_='field-name-field-cfp-content').\
+        self.description = article.find(class_='field-name-field-cfp-content'). \
             find(class_='field-items').div.get_text()
 
         # Using BeautifulSoup to access the call's individual page
@@ -125,7 +125,7 @@ class Call:
         # Getting additional attributes from the call's individual page
         self.long_desc = soup.find(class_="field-name-field-cfp-content").get_text()
         self.categories = [div.get_text() for div in soup.find(class_="field-name-field-cfp-categories")
-                           .div.find_all('div')]
+            .div.find_all('div')]
         self.contact_email = soup.find(class_="field-type-email").a.get('href')
 
     def parse_due_date(self):
@@ -208,6 +208,47 @@ class CallRec:
         self.rec_type = rec_type
         self.criteria = criteria
         self.rec_info = rec_info
+
+
+class RecList:
+    """A list of call recommendations stored as CallRec Objects.
+
+    Mainly intended as a wrapper class for the show method, which gives a markdown representation of the list for use
+    with IPython's display functionality.
+
+    Attributes
+    ----------
+    recs : list of CallRec
+        the list of recommendations
+
+    Methods
+    -------
+    show : IPython.Markdown
+        returns a markdown representation of the recommendation list
+    """
+
+    def __init__(self, recs):
+        self.recs = sorted(recs, key=lambda rec: rec.relevancy, reverse=True)
+
+    def show(self, show_only_open=True, show_full_desc=True):
+        """Returns a markdown representation of the recommendation list."""
+
+        if show_only_open:
+            recs = [rec for rec in self.recs if rec.call.parse_due_date() > datetime.date.today()]
+        else:
+            recs = self.recs
+
+        markdown = ""
+        for rec in recs:
+            item = rec.call
+            markdown += "### " + item.source + "\n" \
+                        + "relevancy: " + str(float(rec.relevancy))[:4] \
+                        + " | deadline: " + item.deadline + " | updated: " + item.updated \
+                        + "\n\n" + item.description + "\n\n" \
+                        + "\n\n" + "[contact email](" + item.contact_email + ") | " \
+                        + "[call page](" + item.source_link + ")" + "\n\n"
+
+        return Markdown(markdown)
 
 
 class CallInstance:
@@ -418,7 +459,7 @@ class CallInstance:
                 rec = CallRec(call, rel, "keyword", keywords, ret_str)
                 rec_list.append(rec)
 
-        return rec_list
+        return RecList(rec_list)
 
     def abstract_recommend(self, abstract, min_relevancy=0.3):
         """Recommends papers based on an abstract.
@@ -467,14 +508,13 @@ class CallInstance:
         # Finds sufficiently relevant calls and places the resulting CallRec object in rec_list
         for call, rel in index_zip:
             if rel > min_relevancy:
-
                 # Makes a brief summary
                 ret_str = "Based on the abstract beginning \"" + " ".join(abstract.split()[:6]) + "..." + "\""
 
                 rec = CallRec(call, rel, "abstract", words, ret_str)
                 rec_list.append(rec)
 
-        return rec_list
+        return RecList(rec_list)
 
     def title_recommend(self, title, min_relevancy=0.3):
         """Recommends papers based on a title.
@@ -522,10 +562,9 @@ class CallInstance:
         # Finds sufficiently relevant calls and places the resulting CallRec object in rec_list
         for call, rel in index_zip:
             if rel > min_relevancy:
-
                 # Makes a brief summary
                 ret_str = "Based on the abstract beginning title " + title + "."
                 rec = CallRec(call, rel, "title", words, ret_str)
                 rec_list.append(rec)
 
-        return rec_list
+        return RecList(rec_list)
