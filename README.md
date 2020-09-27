@@ -1,9 +1,6 @@
 # Paper Recommender
 
-Paper Recommender is a python package for scraping the
-[University of Pennsylvania's Call for Papers site](https://call-for-papers.sas.upenn.edu/)
-and recommending papers based on a title, abstract, or set of
-keywords.  
+Paper Recommender is a python package for scraping the [University of Pennsylvania's Call for Papers site](https://call-for-papers.sas.upenn.edu/) and recommending papers based on a title, abstract, or set of keywords.  Primarily intended for use within Jupyter/IPython Notebooks.
 
 ## Usage
 
@@ -28,6 +25,7 @@ from IPython.display import display
 
 display(recs.show())
 ```
+`show` takes two optional parameters, both of which default to `True`.  If `show_only_open` is set to `False`, overdue paper calls will appear in the results.  If `show_full_desc` is set to `False`, the description of the call will be ommitted from the results.
 
 ## Note for Technical Users
 It is also possible to ignore the recommendation features of the package and use it as a convenient web scraper if further information about or analysis of the site is desired.  Most of the important attributes of a listing are contained in the `Call` Object; more details can be found in its docstring.
