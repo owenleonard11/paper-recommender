@@ -16,7 +16,7 @@ instance = papers.Calls.CallInstance()
 When `instance` is initialized, the site is scraped using `requests`, `lxml`, and `BeautifulSoup` and the relevant data stored.  This may take several minutes, since each call's site must be accessed individually for a full description and there is some wait time between requests.  Although the `instance` object is mostly used for the various recommender functions, its individual `Call` Objects may be accessed using the `calls` attribute:
 ```python
 call = instance[index] # A single Call Object retrieved from instance
-call[source[           # The title of the Call
+call[source]           # The title of the Call
 ```
 To get a set of recommendations, we use either `keyword_recommend`, which takes a list of keywords, `abstract_recommend`, which takes a longer body of text, or `title_recommend`:
 ```python
