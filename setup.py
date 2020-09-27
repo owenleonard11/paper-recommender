@@ -22,7 +22,12 @@ setuptools.setup(
     ],
     install_requires=[
         "beautifulsoup4",
-        "requests"
+        "requests",
+        "nltk",
+        "lxml",
+        "sklearn",
+        "scipy",
+        "IPython"
     ],
     python_requires=">=3"
 )
